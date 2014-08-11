@@ -1,7 +1,7 @@
 vsearcher
 =========
 VSearcher is a new project about dom elements!
-=========
+------
 
 VSearcher是一个有关于dom元素的项目。
 
