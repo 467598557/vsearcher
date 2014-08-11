@@ -1,2 +1,39 @@
 vsearcher
 =========
+VSearcher is a new project about dom elements!
+
+VSearcher是一个有关于dom元素的项目。
+
+从名字就可以看出，这个项目是有关查询功能。
+
+下面先介绍一下该项目目前支持的查询功能组:
+
+支持单层次id,class,tagName查询
+
+支持多层次id,class,tagName查询
+
+支持部分结构筛选器(eq,gt,lt,first(first-child),last(last-child),parent,next,prev)
+
+支持部分二级属性筛选器(checked,selected,disabled)
+
+同级元素筛选(>,+)
+
+实现了同级别不同元素分别筛选(,)
+
+实现了定值属性筛选(例如:input[type=checkbox])
+
+上面每条查询功能组的举例: 1. VSearcher(".container")|VSearcher("#body")|VSearcher("div")
+
+VSearcher("#body #navGroup li.active")
+
+VSearcher("#body #navGroup li:eq(0) a")
+
+VSearcher("#body option:selected")|VSearcher("input:checked")
+
+VSearcher("#body li.active>a")
+
+VSearcher("li,div")
+
+VSearcher("li.active:next , input[type=checkbox]:first")
+
+下面列举一个比较"变态"的查询条件: VSearcher("#body li:nth-child(1),li.active,li:first,li:last,li:eq(2),li:gt(0),input[type=checkbox],input[id=checkbox],li[class=active]>a,input[type=text]:eq(0),li.active:parent,li:next,li:prev,option:selected,li:gt(3)");
