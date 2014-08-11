@@ -22,18 +22,19 @@ VSearcher是一个有关于dom元素的项目。
 
 实现了定值属性筛选(例如:input[type=checkbox])
 
-上面每条查询功能组的举例: 1. VSearcher(".container")|VSearcher("#body")|VSearcher("div")
+上面每条查询功能组的举例: 
+1. VSearcher(".container")|VSearcher("#body")|VSearcher("div")
 
-VSearcher("#body #navGroup li.active")
+2. VSearcher("#body #navGroup li.active")
 
-VSearcher("#body #navGroup li:eq(0) a")
+3. VSearcher("#body #navGroup li:eq(0) a")
 
-VSearcher("#body option:selected")|VSearcher("input:checked")
+4. VSearcher("#body option:selected")|VSearcher("input:checked")
 
-VSearcher("#body li.active>a")
+5. VSearcher("#body li.active>a")
 
-VSearcher("li,div")
+6. VSearcher("li,div")
 
-VSearcher("li.active:next , input[type=checkbox]:first")
+7. VSearcher("li.active:next , input[type=checkbox]:first")
 
 下面列举一个比较"变态"的查询条件: VSearcher("#body li:nth-child(1),li.active,li:first,li:last,li:eq(2),li:gt(0),input[type=checkbox],input[id=checkbox],li[class=active]>a,input[type=text]:eq(0),li.active:parent,li:next,li:prev,option:selected,li:gt(3)");
