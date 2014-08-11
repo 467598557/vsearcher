@@ -8,19 +8,19 @@ vsearcher
 
 下面先介绍一下该项目目前支持的查询功能组:
 
-支持单层次id,class,tagName查询
+###  1.支持单层次id,class,tagName查询
 
-支持多层次id,class,tagName查询
+     2.支持多层次id,class,tagName查询
 
-支持部分结构筛选器(eq,gt,lt,first(first-child),last(last-child),parent,next,prev)
+     3.支持部分结构筛选器(eq,gt,lt,first(first-child),last(last-child),parent,next,prev)
 
-支持部分二级属性筛选器(checked,selected,disabled)
+     4.支持部分二级属性筛选器(checked,selected,disabled)
 
-同级元素筛选(>,+)
+     5.同级元素筛选(>,+)
 
-实现了同级别不同元素分别筛选(,)
+     6.实现了同级别不同元素分别筛选(,)
 
-实现了定值属性筛选(例如:input[type=checkbox])
+     7.实现了定值属性筛选(例如:input[type=checkbox])
 
 上面每条查询功能组的举例: 
 1. VSearcher(".container")|VSearcher("#body")|VSearcher("div")
