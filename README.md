@@ -37,4 +37,5 @@ vsearcher
 
      7. VSearcher("li.active:next , input[type=checkbox]:first")
 
-下面列举一个比较"变态"的查询条件: VSearcher("#body li:nth-child(1),li.active,li:first,li:last,li:eq(2),li:gt(0),input[type=checkbox],input[id=checkbox],li[class=active]>a,input[type=text]:eq(0),li.active:parent,li:next,li:prev,option:selected,li:gt(3)");
+###  下面列举一个比较"变态"的查询条件: 
+     VSearcher("#body li:nth-child(1),li.active,li:first,li:last,li:eq(2),li:gt(0),input[type=checkbox],input[id=checkbox],li[class=active]>a,input[type=text]:eq(0),li.active:parent,li:next,li:prev,option:selected,li:gt(3)");
