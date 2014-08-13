@@ -96,7 +96,7 @@ function VSearcher(selector, context) {
 			return /((:checked|:selected|:disabled)($|\s+))/.test(selector);
 		},
 		isComplex: function(selector) {
-			return /^\w+(\.|#|>|\+|,)[\w_]+/.test(selector) || /:(eq|gt|lt|nth-child)\(\d+\)/.test(selector) || /:((first|last|nth)-child|checked|first|last|parent|next|prev|selected|disabled)|(\[(\w+)=('|")?([\w_]+)('|")?\])$/.test(selector);
+			return /^\w+(\.|#|>|\+|,)[\w_]+/.test(selector) || /:(eq|gt|lt|nth-child)\(\d+\)/.test(selector) || /:((first|last|nth)-child|checked|first|last|parent|next|prev|selected|disabled)|(\[(\w+)(=|\^=)('|")?([\w_]+)('|")?\])$/.test(selector);
 		},
 		containerID: function(selector) {
 			return /#/.test(selector);
@@ -180,10 +180,11 @@ function VSearcher(selector, context) {
 		}
 		if(filterResult) {
 			if(simpleAttr) {
-				var attr = simpleAttr.replace(/\[|\]|'|"/g, '').split("=");
+				var attr = simpleAttr.replace(/\[|\]|'|"/g, '').split(/\^=|=/g);
+				var operate = simpleAttr.match(/\^=|=/g);
 				var attrName = attr[0];
 				var attrValue = attr[1];
-				if(!attrMatch(ele, attrName, attrValue)) {
+				if(!attrMatch(ele, attrName, attrValue, operate)) {
 					filterResult = false;
 				}
 			}
@@ -211,8 +212,18 @@ function VSearcher(selector, context) {
 	* @param attrName 属性名字
 	* @param value 属性值，如果不存在，则只是属性存在就返回true
 	*/
-	function attrMatch(ele, attrName, value) {
-		return !value ? (ele[attrName] || ele.getAttribute(attrName)) : (ele[attrName] == value || ele.getAttribute(attrName) == value);
+	function attrMatch(ele, attrName, value, type) {
+		if(!value) {
+			return ele[attrName] || ele.getAttribute(attrName);
+		}
+		
+		switch(type) {
+			case "^=":
+				return (ele[attrName] !== value || ele.getAttribute(attrName) !== value);	
+			break;
+			default:
+				return (ele[attrName] === value || ele.getAttribute(attrName) === value);			
+		}
 	}
 	function complexFilter(result, selector) {
 		// 属性检测
