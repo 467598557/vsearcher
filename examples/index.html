@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>学会实现自己查询库</title>
+		<link rel="stylesheet" type="text/css" href="index.css" />
+		<style type="text/css">
+		</style>
+	</head>
+	<body id="body">
+		<input type="checkbox" id="checkbox"/><label for="checkbox">checkbox检测</label>
+		<select id="select">
+			<option value="1">select属性检测1</option>
+			<option value="2">select属性检测2</option>
+			<option value="3">select属性检测3</option>
+		</select>
+		<input type="text" value="定向属性检测" />
+		<input type="button" value="定向属性检测1" />
+		<input type="button" value="定向属性检测2" />
+		<input type="button" value="定向属性检测3" />
+		<div class="wrapper">
+			<div id="navGroup">
+				<ul>
+					<li class="active"><a href="javascript:void(0)" >查询器</a></li>
+					<li><a href="javascript:void(0)" >完善中...1</a></li>
+					<li><a href="javascript:void(0)" >完善中...2</a></li>
+					<li><a href="javascript:void(0)" >完善中...3</a></li>
+				</ul>
+			</div>
+			<div id="mainBody">
+				<p class="title">VSearcher.js(库)</p>
+				<ul class="featureList">
+					<li><a href="javascript:void(0)">1.支持单层次id,class,tagName查询</a></li>
+					<li><a href="javascript:void(0)">2.支持多层次id,class,tagName查询</a></li>
+					<li><a href="javascript:void(0)">3.支持部分结构筛选器(eq,gt,lt,first(first-child),last(last-child),parent,next,prev)</a></li>
+					<li><a href="javascript:void(0)">4.支持部分二级属性筛选器(checked,selected,disabled)</a></li>
+					<li><a href="javascript:void(0)">5.同级元素筛选(>,+)</a></li>
+					<li><a href="javascript:void(0)">6.实现了同级别不同元素分别筛选(,)</a></li>
+					<li><a href="javascript:void(0)">7.实现了定值属性筛选(例如:input[type=checkbox])</a></li>
+					<li><a href="javascript:void(0)">8.实现了定值非属性筛选(例如:input[type^=checkbox])</a></li>
+				</ul>
+				<p class="notice">快去试试吧~~粘贴在控制台运行即可</p>
+				<div class="demoList">
+					<div id="demo_1">
+						<p>VSearcher(".container")|VSearcher("#body")|VSearcher("div")</p>
+					</div>
+					<div id="demo_2">
+						<p>VSearcher("#body #navGroup li.active")</p>
+					</div>
+					<div id="demo_3">
+						<p>VSearcher("#body #navGroup li:eq(0) a")</p>
+					</div>
+					<div id="demo_4">
+						<p>VSearcher("#body option:selected")|VSearcher("input:checked")</p>
+					</div>
+					<div id="demo_5">
+						<p>VSearcher("#body li.active>a")</p>
+					</div>
+					<div id="demo_6">
+						<p>VSearcher("li,div")</p>
+					</div>
+					<div id="demo_7">
+						<p>VSearcher("li.active:next , input[type=checkbox]:first")</p>
+					</div>
+					<div id="demo_8">
+						<p>VSearcher("input[type^=checkbox]:first")</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="vsearcher.js" ></script>
+</html>
