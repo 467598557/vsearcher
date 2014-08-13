@@ -22,6 +22,8 @@ vsearcher
      6.实现了同级别不同元素分别筛选(,)
 
      7.实现了定值属性筛选(例如:input[type=checkbox])
+     
+     8.实现了定值非属性筛选(例如:input[type^=checkbox])
 
 ###  上面每条查询功能组的举例: 
      1. VSearcher(".container")|VSearcher("#body")|VSearcher("div")
@@ -37,6 +39,8 @@ vsearcher
      6. VSearcher("li,div")
 
      7. VSearcher("li.active:next , input[type=checkbox]:first")
+     
+     8. VSearcher("input[type^=checkbox]")
 
 ###  下面列举一个比较"变态"的查询条件: 
      VSearcher("#body li:nth-child(1),li.active,li:first,li:last,li:eq(2),li:gt(0),input[type=checkbox],input[id=checkbox],li[class=active]>a,input[type=text]:eq(0),li.active:parent,li:next,li:prev,option:selected,li:gt(3)");
