@@ -96,7 +96,7 @@ function VSearcher(selector, context) {
 			return /((:checked|:selected|:disabled)($|\s+))/.test(selector);
 		},
 		isComplex: function(selector) {
-			return /^\w+(\.|#|>|\+|,)[\w_]+/.test(selector) || /:(eq|gt|lt|nth-child)\(\d+\)/.test(selector) || /:((first|last|nth)-child|checked|first|last|parent|next|prev|selected|disabled)|(\[(\w+)(=|\^=)('|")?([\w_]+)('|")?\])$/.test(selector);
+			return /^\w+(\.|#|>|\+|,)[\w_]+/.test(selector) || /:(eq|gt|lt|nth-child)\(\d+\)/.test(selector) || /:((first|last|nth)-child|checked|first|last|parent|next|prev|selected|disabled)|(\[(\w+)(=|\^=)('|")?([\w_]+)('|")?\])|:not\([#\.\w-=\^:]+\)$/.test(selector);
 		},
 		containerID: function(selector) {
 			return /#/.test(selector);
@@ -160,8 +160,13 @@ function VSearcher(selector, context) {
 	* 简单的筛选复杂元素
 	* @param ele 待筛选元素
 	* @param selector 筛选条件
+	* @param reverse 是否取向查找
 	*/
-	function simpleSearchInComplex(ele, selector) {
+	function simpleSearchInComplex(ele, selector, reverse) {
+		if(ele.nodeType !== 1) {
+			return false;
+		}
+		
 		var id = (selector.match(/#[\w_]+/g) || [])[0];// 只取第一个id
 		var tag = (selector.match(/^\w+/) || [])[0]; // 只取第一个tag
 		var classes = selector.match(/\.[\w_]+/g) || [];
@@ -172,8 +177,8 @@ function VSearcher(selector, context) {
 			id = id.replace(/^#/, '');
 			ele.getAttribute("id") !== id && (filterResult = false);
 		}
-		if(tag && tag.toUpperCase() !== ele.tagName) {
-			filterResult = false;
+		if(filterResult && tag) {
+			tag.toUpperCase() !== ele.tagName && (filterResult = false);
 		}
 		if(filterResult) {
 			filterResult = filterEleByClass(ele, classes);
@@ -196,7 +201,8 @@ function VSearcher(selector, context) {
 				filterResult = false;
 			}
 		}
-		
+
+		reverse && (filterResult = !filterResult);
 		return filterResult;
 	}
 	/**
@@ -303,11 +309,19 @@ function VSearcher(selector, context) {
 			var _searchArray = [];
 			var _selector = selectorList[i];
 			var _nextSelector = selectorList[i+1];
+			var _reverseSelector = _selector.match(/:not\([#\.\w-=\^:]+\)$/g);
 			var _spliter = spliterList[i];
 			var isBreak = false;
+			if(_reverseSelector) {
+				_selector = _selector.replace(/:not\([#\.\w-=\^:]+\)$/g, '');
+				_reverseSelector = _reverseSelector.first().replace(/:not\(|\)/g, '');
+			}
 			for(var j=0, jLen=array.length; !isBreak && j<jLen; j++) {
 				var _ele = array[j];
 				var filterResult = simpleSearchInComplex(_ele, _selector);
+				if(filterResult) {
+					 _reverseSelector && (filterResult = simpleSearchInComplex(_ele, _reverseSelector, true));
+				}
 				// 如果不存在关联检索
 				if(!!!_spliter || !filterResult) {
 					filterResult && _searchArray.push(_ele);
@@ -426,7 +440,7 @@ function VSearcher(selector, context) {
 		return selector.replace(/\s+(,|\>|\+)\s+/g, "$1");
 	}
 	
-	function origialSearch() {
+	function originalSearch() {
 		var _selectorArray = fixedSelector(Utils.trim(selector)).split(/\s+/g);
 		var searchArray = [context];
 		for(var i=0, len=_selectorArray.length; i<len; i++) {
@@ -446,9 +460,9 @@ function VSearcher(selector, context) {
 			return context.querySelectorAll(selector);
 		} catch(e) {
 			console.error("querySelectorAll查询异常,自动更换为VSearcher引擎查询", e.message);
-			return origialSearch();
+			return originalSearch();
 		}
 	} else {
-	   return origialSearch();
+	   return originalSearch();
 	}
 }
