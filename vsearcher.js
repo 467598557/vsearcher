@@ -96,7 +96,7 @@ function VSearcher(selector, context) {
 			return /((:checked|:selected|:disabled)($|\s+))/.test(selector);
 		},
 		isComplex: function(selector) {
-			return /^\w+(\.|#|>|\+|,)[\w_]+/.test(selector) || /:(eq|gt|lt|nth-child)\(\d+\)/.test(selector) || /:((first|last|nth)-child|checked|first|last|parent|next|prev|selected|disabled)|(\[(\w+)(=|\^=)('|")?([\w_]+)('|")?\])|:not\([#\.\w-=\^:]+\)$/.test(selector);
+			return /^(\w+)?(\.|#|>|\+|,)[\w_]+/.test(selector) || /:(eq|gt|lt|nth-child)\(\d+\)/.test(selector) || /:((first|last|nth)-child|checked|first|last|parent|next|prev|selected|disabled)|(\[(\w+)(=|\^=)('|")?([\w_]+)('|")?\])|:not\([#\.\w-=\^:]+\)$/.test(selector);
 		},
 		containerID: function(selector) {
 			return /#/.test(selector);
@@ -170,7 +170,7 @@ function VSearcher(selector, context) {
 		var id = (selector.match(/#[\w_]+/g) || [])[0];// 只取第一个id
 		var tag = (selector.match(/^\w+/) || [])[0]; // 只取第一个tag
 		var classes = selector.match(/\.[\w_]+/g) || [];
-		var simpleAttr = (selector.match(/\[(\w+)=('|")?([\w_]+)('|")?\]/g) || [])[0];
+		var simpleAttr = (selector.match(/\[(\w+)\^?=('|")?([\w_]+)('|")?\]/g) || [])[0];
 		var attrFilter = selector.match(/(:checked|:selected|:disabled)(\s+|$)/g);
 		var filterResult = true;
 		if(id) {
@@ -189,7 +189,7 @@ function VSearcher(selector, context) {
 				var operate = simpleAttr.match(/\^=|=/g);
 				var attrName = attr[0];
 				var attrValue = attr[1];
-				if(!attrMatch(ele, attrName, attrValue, operate)) {
+				if(!attrMatch(ele, attrName, attrValue, operate ? operate[0] : null)) {
 					filterResult = false;
 				}
 			}
@@ -225,7 +225,7 @@ function VSearcher(selector, context) {
 		
 		switch(type) {
 			case "^=":
-				return (ele[attrName] !== value || ele.getAttribute(attrName) !== value);	
+				return (ele[attrName] !== value && ele.getAttribute(attrName) !== value);	
 			break;
 			default:
 				return (ele[attrName] === value || ele.getAttribute(attrName) === value);			
