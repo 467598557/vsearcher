@@ -4,8 +4,6 @@
 		<meta charset="UTF-8" />
 		<title>学会实现自己查询库</title>
 		<link rel="stylesheet" type="text/css" href="index.css" />
-		<style type="text/css">
-		</style>
 	</head>
 	<body id="body">
 		<input type="checkbox" id="checkbox"/><label for="checkbox">checkbox检测</label>
@@ -37,8 +35,11 @@
 					<li><a href="javascript:void(0)">5.同级元素筛选(>,+)</a></li>
 					<li><a href="javascript:void(0)">6.实现了同级别不同元素分别筛选(,)</a></li>
 					<li><a href="javascript:void(0)">7.实现了定值属性筛选(例如:input[type=checkbox])</a></li>
-					<li><a href="javascript:void(0)">8.实现了定值非属性筛选(例如:input[type^=checkbox])</a></li>
+					<li><a href="javascript:void(0)">8.实现了子串匹配属性选择器(非)(例如:input[type!=checkbox])</a></li>
 					<li><a href="javascript:void(0)">9.实现了not筛选(例如:li:not(.active))</a></li>
+					<li><a href="javascript:void(0)">10.实现了子串匹配属性选择器(属性值前缀匹配)(例如:input[type^=checkbox])</a></li>
+					<li><a href="javascript:void(0)">11.实现了子串匹配属性选择器(属性值后缀匹配)(例如:input[type$=checkbox])</a></li>
+					<li><a href="javascript:void(0)">12.实现了子串匹配属性选择器(属性值部分匹配)(例如:input[type*=checkbox])</a></li>
 				</ul>
 				<p class="notice">快去试试吧~~粘贴在控制台运行即可</p>
 				<div class="demoList">
@@ -64,14 +65,23 @@
 						<p>VSearcher("li.active:next , input[type=checkbox]:first")</p>
 					</div>
 					<div id="demo_8">
-						<p>VSearcher("input[type^=checkbox]:first")</p>
+						<p>VSearcher("input[type!=checkbox]:first")</p>
 					</div>
 					<div id="demo_9">
 						<p>VSearcher("li:not(.active)")</p>
+					</div>
+					<div id="demo_10">
+						<p>VSearcher("li[class^=active]")</p>
+					</div>
+					<div id="demo_11">
+						<p>VSearcher("li[class$=active]")</p>
+					</div>
+					<div id="demo_12">
+						<p>VSearcher("li[class*=ctiv]")</p>
 					</div>
 				</div>
 			</div>
 		</div>
 	</body>
-	<script type="text/javascript" src="../vsearcher.js" ></script>
+	<script type="text/javascript" src="vsearcher.js" ></script>
 </html>
