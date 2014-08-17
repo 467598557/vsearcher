@@ -23,9 +23,15 @@ vsearcher
 
      7.实现了定值属性筛选(例如:input[type=checkbox])
      
-     8.实现了定值非属性筛选(例如:input[type^=checkbox])
+     8.实现了子串匹配属性选择器(非)(例如:input[type!=checkbox])
      
      9.实现了not筛选(例如:li:not(.active))
+     
+     10.实现了子串匹配属性选择器(属性值前缀匹配)(例如:input[type^=checkbox])
+     
+     11.实现了子串匹配属性选择器(属性值后缀匹配)(例如:input[type$=checkbox])
+     
+     12.实现了子串匹配属性选择器(属性值部分匹配)(例如:input[type*=checkbox])
 
 ###  上面每条查询功能组的举例: 
      1. VSearcher(".container")|VSearcher("#body")|VSearcher("div")
@@ -45,6 +51,12 @@ vsearcher
      8. VSearcher("input[type^=checkbox]")
      
      9. VSearcher("li:not(.active)")
+     
+     10.VSearcher("li[class^=active]")
+     
+     11.VSearcher("li[class$=active]")
+     
+     12.VSearcher("li[class*=ctiv]")
 
 ###  下面列举一个比较"变态"的查询条件: 
      VSearcher("#body li:nth-child(1),li.active,li:first,li:last,li:eq(2),li:gt(0),input[type=checkbox],input[id=checkbox],li[class=active]>a,input[type=text]:eq(0),li.active:parent,li:next,li:prev,option:selected,li:gt(3)");
