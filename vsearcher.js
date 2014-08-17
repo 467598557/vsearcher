@@ -96,7 +96,7 @@ function VSearcher(selector, context) {
 			return /((:checked|:selected|:disabled)($|\s+))/.test(selector);
 		},
 		isComplex: function(selector) {
-			return /^(\w+)?(\.|#|>|\+|,)[\w_]+/.test(selector) || /:(eq|gt|lt|nth-child)\(\d+\)/.test(selector) || /:((first|last|nth)-child|checked|first|last|parent|next|prev|selected|disabled)|(\[(\w+)(=|\^=)('|")?([\w_]+)('|")?\])|:not\([#\.\w-=\^:]+\)$/.test(selector);
+			return /^(\w+)?(\.|#|>|\+|,)[\w_]+/.test(selector) || /:(eq|gt|lt|nth-child)\(\d+\)/.test(selector) || /:((first|last|nth)-child|checked|first|last|parent|next|prev|selected|disabled)|(\[(\w+)(=|\^=|!=|\$=|\*=)('|")?([\w_]+)('|")?\])|:not\([#\.\w-=\^:]+\)$/.test(selector);
 		},
 		containerID: function(selector) {
 			return /#/.test(selector);
@@ -170,7 +170,7 @@ function VSearcher(selector, context) {
 		var id = (selector.match(/#[\w_]+/g) || [])[0];// 只取第一个id
 		var tag = (selector.match(/^\w+/) || [])[0]; // 只取第一个tag
 		var classes = selector.match(/\.[\w_]+/g) || [];
-		var simpleAttr = (selector.match(/\[(\w+)\^?=('|")?([\w_]+)('|")?\]/g) || [])[0];
+		var simpleAttr = (selector.match(/\[(\w+)(\^|!|\$|\*)?=('|")?([\w_]+)('|")?\]/g) || [])[0];
 		var attrFilter = selector.match(/(:checked|:selected|:disabled)(\s+|$)/g);
 		var filterResult = true;
 		if(id) {
@@ -185,8 +185,9 @@ function VSearcher(selector, context) {
 		}
 		if(filterResult) {
 			if(simpleAttr) {
-				var attr = simpleAttr.replace(/\[|\]|'|"/g, '').split(/\^=|=/g);
-				var operate = simpleAttr.match(/\^=|=/g);
+				var reg = /\^=|=|!=|\$=|\*=/g;
+				var attr = simpleAttr.replace(/\[|\]|'|"/g, '').split(reg);
+				var operate = simpleAttr.match(reg);
 				var attrName = attr[0];
 				var attrValue = attr[1];
 				if(!attrMatch(ele, attrName, attrValue, operate ? operate[0] : null)) {
@@ -212,6 +213,18 @@ function VSearcher(selector, context) {
 		var array = filterLevelElesInComplex(eleList, selector, deeply);
 		return array;
 	}
+	function createRegExp(value, type) {
+		switch(type) {
+			case "^":
+				return new RegExp(type+value, "g");
+			case "$":
+				return new RegExp(value+type, "g");
+			case "all":
+				return new RegExp("^"+value+"$", "g");
+			default:
+				return new RegExp(value, "g");
+		}
+	}
 	/**
 	* 属性筛选
 	* @param ele 待筛选元素
@@ -223,12 +236,28 @@ function VSearcher(selector, context) {
 			return ele[attrName] || ele.getAttribute(attrName);
 		}
 		
+		var reg;
+		type = type || "=";
 		switch(type) {
 			case "^=":
-				return (ele[attrName] !== value && ele.getAttribute(attrName) !== value);	
+				reg = createRegExp(value, "^");
 			break;
-			default:
-				return (ele[attrName] === value || ele.getAttribute(attrName) === value);			
+			case "$=":
+				reg = createRegExp(value, "$");
+			break;
+			case "*=":
+				reg = createRegExp(value);
+			break;
+			case "=":
+				reg = createRegExp(value, "all");
+			break;
+		}
+		if(reg) { 
+			return reg.test(ele[attrName]) || reg.test(ele.getAttribute(attrName));
+		}
+		
+		if(type === "!=") {
+			return (ele[attrName] !== value && ele.getAttribute(attrName) !== value);	
 		}
 	}
 	function complexFilter(result, selector) {
