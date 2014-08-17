@@ -484,6 +484,8 @@ function VSearcher(selector, context) {
 		return searchArray;
 	}
 
+	// 为了方便测试，还是暂时先把这个开关给关掉吧~~~~
+	/*
 	if(context.querySelectorAll) {
 		try {
 			return context.querySelectorAll(selector);
@@ -491,7 +493,9 @@ function VSearcher(selector, context) {
 			console.error("querySelectorAll查询异常,自动更换为VSearcher引擎查询", e.message);
 			return originalSearch();
 		}
-	} else {
+	} else 
+	*/
+	{
 	   return originalSearch();
 	}
 }
