@@ -76,11 +76,29 @@
 		isID: function(selector) {
 			return /^\s*#[\w_]+\s*$/g.test(selector);
 		},
+		isIDPrefix: function(selector) {
+			return /^\s*#[\w_]+/.test(selector);
+		},
+		matchIDPrefix: function(selector) {
+			return selector.match(/^\s*#[\w_]+\s*/) || [];
+		},
 		isClass: function(selector) {
 			return /^\s*\.[\w_]+\s*$/.test(selector);
 		},
+		isClassPrefix: function(selector) {
+			return /^\s*\.[\w_]+/.test(selector);
+		},
+		matchClassPrefix: function(selector) {
+			return selector.match(/^\s*\.[\w_]+/) || [];
+		},
 		isTag: function(selector) {
 			return /^\s*\w+\s*$/.test(selector);
+		},
+		isTagPrefix: function(selector) {
+			return /^\s*\w+/.test(selector);
+		},
+		matchTagPrefix: function(selector) {
+			return selector.match(/^\s*\w+\s*/) || [];
 		},
 		isAttr: function(selector) {
 			return /((:checked|:selected|:disabled)($|\s+))/.test(selector);
@@ -93,6 +111,15 @@
 		},
 		containerClass: function(selector) {
 			return /\./.test(selector);
+		},
+		filterClass: function(ele, className) {
+			return Utils.hasClass(ele, className.replace(/^\./, ''));
+		},
+		filterTag: function(ele, tag) {
+			return ele.tagName.toLowerCase() === tag;
+		},
+		filterID: function(ele, id) {
+			return ele.getAttribute("id") === id.replace(/^#/, '');
 		}
 	};
 	/**
@@ -305,6 +332,35 @@
 		
 		return result;
 	}
+	function findByPrefix(ele, prefix) {
+		switch(prefix.type) {
+			case "Tag":
+				return ele.getElementsByTagName(prefix.value);
+			break;
+			case "Class":
+				return findClass(prefix.value, ele)
+			break;
+			case "ID":
+				var _result = document.getElementById(prefix.value.replace(/^#/, ''));
+				return _result ? [_result] : [];
+			break;
+		}
+	}
+	function findClass(className, ele) {
+		if(ele.getElementsByClassName) {
+			return ele.getElementsByClassName(className);
+		}
+		
+		var nodes = ele.getElementsByClassName("*");
+		var result = [];
+		for(var i=0, len=nodes.length; i<len; i++) {
+			var node = nodes[i];
+			if(Utils.hasClass(className)) {
+				result.push(node);
+			}
+		}
+		return result;
+	}
 	function filterChildEles(ele) {
 		var childNodes = ele.childNodes;
 		var array = [];
@@ -341,6 +397,7 @@
 				if(filterResult) {
 					 _reverseSelector && (filterResult = simpleSearchInComplex(_ele, _reverseSelector, true));
 				}
+				
 				// 如果不存在关联检索
 				if(!!!_spliter || !filterResult) {
 					filterResult && _searchArray.push(_ele);
@@ -396,28 +453,25 @@
 		}
 		return array;
 	}
-	/**
-	* 复杂性筛选条件查询
-	* @param ele 待筛选元素
-	* @param selector 筛选条件
-	* @param deeplySearch 是否需要向下层继续筛选
-	*/
-	function searchComplex(ele, selector, deeplySearch) {
-		var array = [];
-		// 处理并行筛选器
-		var selectorList = selector.split(/,/g);
-		for(var i=0, len=selectorList.length; i<len; i++) {
-			var _selector = selectorList[i];
-			var _searchArray = [];
-			Array.prototype.push.apply(_searchArray, filterLevelElesInComplex([ele], _selector, true));
-			if(_searchArray.length > 0) {
-				// 属性检测
-				_searchArray = (complexFilter(_searchArray, _selector));
-			}
-			Array.prototype.push.apply(array, _searchArray);
+	function getPrefixType(selector) {
+		if(helper.isTagPrefix(selector)) {
+			return {
+				type: "Tag",
+				value: helper.matchTagPrefix(selector)[0]
+			};
 		}
-		
-		return array;
+		if(helper.isIDPrefix(selector)) {
+			return {
+				type: "ID",
+				value: helper.matchIDPrefix(selector)[0]
+			};
+		}
+		if(helper.isClassPrefix(selector)) {
+			return {
+				type: "Class",
+				value: helper.matchClassPrefix(selector)[0]
+			};
+		}
 	}
 	/**
 	* 主查询入口
@@ -425,10 +479,49 @@
 	* @param selector 筛选条件
 	*/
 	function search(ele, selector) {
-		//if(helper.isComplex(selector)) {
-			var result = searchComplex(ele, selector, true);
-			return result;
-		//}
+		var result = [];
+		var selectorList = selector.split(/,/g);
+		for(var i=0, len=selectorList.length; i<len; i++) {
+			var _selector = selectorList[i];
+			var array = [];
+			var deeplySearch = true;
+			// 对头检索，判断并筛选id,tag,class
+			array = findByPrefix(ele, getPrefixType(_selector));
+
+			// id,class,tag连续自身查询
+			while(_selector) {	
+				var _array = [];
+				var _prefix = getPrefixType(_selector);
+				if(!_prefix) {
+					break;
+				}
+				
+				var _filter = helper["filter"+_prefix.type];
+				var _prefixValue = _prefix.value;
+				for(var j=0, jLen=array.length; j<jLen; j++) {
+					var _ele = array[j];
+					if(_filter(_ele, _prefixValue)) {
+						_array.push(_ele);
+					}
+				}
+				_selector = _selector.substring(_prefixValue.length);
+				array = _array;
+			}
+			if(!_selector) {
+				Array.prototype.push.apply(result, array);
+				continue;
+			}
+			
+			array.length == 0 ? array.push(ele) : deeplySearch = false;
+			var _result = filterLevelElesInComplex(array, _selector, deeplySearch);
+			if(_result.length > 0) {
+				// 复杂筛选器
+				_result = (complexFilter(_result, _selector));
+			}
+			Array.prototype.push.apply(result, _result);
+		}
+		
+		return result;
 	}
 	/**
 	* 修正筛选条件中的某些额外字符
@@ -448,41 +541,11 @@
 			context = document;
 		}
 		selector = Utils.trim(selector);
-		// searchID
-		if(helper.isID(selector)) {
-			var _ele = context.getElementById(selector.replace(/^#/, ''));
-			_ele && array.push(_ele);
-			
-			return array;
-		} 
-		
-		// searchClass
-		if(helper.isClass(selector)) {	
-			// 快速检索
-			if(document.getElementsByClassName) {
-				return document.getElementsByClassName(selector.replace(/^\./, '')) || [];
-			}
-		
-			var _selector = selector.replace(/^\./, '');
-			var array = [];
-			if(context.nodeType === 1) {
-				if(Utils.hasClass(context, _selector)) {
-					array.push(context);
-				}
-			}
-			var childNodes = filterChildEles(context);
-			for(var i=0, len=childNodes.length; i<len; i++) {
-				var child = childNodes[i];
-				Array.prototype.push.apply(array, search(child, selector));
-			}
-			
+
+		array = findByPrefix(context, getPrefixType(selector));
+		if(array.length > 0) {
 			return array;
 		}
-		
-		// searchTag
-		if(helper.isTag(selector)) {
-			return context.getElementsByTagName(selector) || [];
-		} 
 		
 		var _selectorArray = fixedSelector(Utils.trim(selector)).split(/\s+/g);
 		var searchArray = [context];
