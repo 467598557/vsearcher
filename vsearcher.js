@@ -1,96 +1,86 @@
-/**
-* 扩展方法:从数组中获取指定下标的数据
-* @param index 下标
-*/
-Array.prototype.get = Array.prototype.eq = function(index) {
-	return this[index];
-}
-/**
-* 扩展方法:从数组中获取第一个数据
-*/
-Array.prototype.first = function() {
-	return this[0];
-}
-/**
-* 扩展方法:从数组中获取最后一个数据
-*/
-Array.prototype.last = function() {
-	return this[this.length - 1];
-}
-/**
-* 扩展方法:从数组中获取大于指定下标的数据
-*/
-Array.prototype.gt = function(index) { 
-	return this.slice(+index+1);
-}
-/**
-* 扩展方法:从数组中获取小于指定下标的数据
-*/
-Array.prototype.lt = function(index) {
-	this.splice(index);
-	return this;
-}
-/**
-* 工具类
-* 1.isDomCollection 是否是dom元素集
-* 2.isDomElement 是否是dom元素
-* 3.hasClass 是否拥有指定样式类
-* 4.trim 简单的去除两边空格
-*/
-var Utils = {
-	isDomCollection: function(dom) {
-		return /^\[object HTMLCollection*\]$/.test(Object.prototype.toString.call(dom))
-	},
-	isDomElement: function(dom) {
-		return /^\[object HTML\w*\]$/.test(Object.prototype.toString.call(dom));
-	},
-	hasClass: function(ele, className) {
-		var reg = new RegExp('(^|\\s)'+className+'($|\\s)');
-		return reg.test(ele.getAttribute("class"));
-	},
-	trim: function(str) {
-		if(str.trim) {
-			return str.trim();
-		}
-		
-		return str.replace(/^\s*.\s*$/gi, '');
+(function() {
+	/**
+	* 扩展方法:从数组中获取指定下标的数据
+	* @param index 下标
+	*/
+	Array.prototype.get = Array.prototype.eq = function(index) {
+		return this[index];
 	}
-}
-/**
-* 扩展方法，这里可以将其他的类型判断加上，只要将首字母大写的类型字符串添加到数组即可
-*/
-var types = ["String","Array"];
-for(var i=0, len=types.length; i<len; i++) {
-	var type = types[i];
-	(function(type) {
-		Utils["is"+type] = function() {
-			return  new RegExp("^\\[object "+type+"\\]$").test(Object.prototype.toString.call(arguments[0]));
-		}
-	})(type);
-}
-
-function VSearcher(selector, context) {
-	var array = [];
-	if(!selector || !Utils.isString(selector)) {
-		return array;
+	/**
+	* 扩展方法:从数组中获取第一个数据
+	*/
+	Array.prototype.first = function() {
+		return this[0];
 	}
-	
-	!context && (context = document);
-	if(context.nodeType != 1 || context.nodeType != 9) {
-		context = document;
+	/**
+	* 扩展方法:从数组中获取最后一个数据
+	*/
+	Array.prototype.last = function() {
+		return this[this.length - 1];
+	}
+	/**
+	* 扩展方法:从数组中获取大于指定下标的数据
+	*/
+	Array.prototype.gt = function(index) { 
+		return this.slice(+index+1);
+	}
+	/**
+	* 扩展方法:从数组中获取小于指定下标的数据
+	*/
+	Array.prototype.lt = function(index) {
+		this.splice(index);
+		return this;
+	}
+	/**
+	* 工具类
+	* 1.isDomCollection 是否是dom元素集
+	* 2.isDomElement 是否是dom元素
+	* 3.hasClass 是否拥有指定样式类
+	* 4.trim 简单的去除两边空格
+	*/
+	var Utils = {
+		isDomCollection: function(dom) {
+			return /^\[object HTMLCollection*\]$/.test(Object.prototype.toString.call(dom))
+		},
+		isDomElement: function(dom) {
+			return /^\[object HTML\w*\]$/.test(Object.prototype.toString.call(dom));
+		},
+		hasClass: function(ele, className) {
+			var reg = new RegExp('(^|\\s)'+className+'($|\\s)');
+			return reg.test(ele.getAttribute("class"));
+		},
+		trim: function(str) {
+			if(str.trim) {
+				return str.trim();
+			}
+			
+			return str.replace(/^\s*.\s*$/gi, '');
+		}
+	}
+	/**
+	* 扩展方法，这里可以将其他的类型判断加上，只要将首字母大写的类型字符串添加到数组即可
+	*/
+	var types = ["Array"];
+	for(var i=0, len=types.length; i<len; i++) {
+		var type = types[i];
+		(function(type) {
+			Utils["is"+type] = function() {
+				return  new RegExp("^\\[object "+type+"\\]$").test(Object.prototype.toString.call(arguments[0]));
+			}
+		})(type);
 	}
 	/**
 	* 帮助类
 	*/
 	var helper = {
 		isID: function(selector) {
-			return /^#[\w_]+/.test(selector);
+			return /^\s*#[\w_]+\s*$/g.test(selector);
 		},
 		isClass: function(selector) {
-			return /^\.[\w_]+/.test(selector);
+			return /^\s*\.[\w_]+\s*$/.test(selector);
 		},
 		isTag: function(selector) {
-			return /^\w+/.test(selector);
+			return /^\s*\w+\s*$/.test(selector);
 		},
 		isAttr: function(selector) {
 			return /((:checked|:selected|:disabled)($|\s+))/.test(selector);
@@ -435,32 +425,10 @@ function VSearcher(selector, context) {
 	* @param selector 筛选条件
 	*/
 	function search(ele, selector) {
-		if(helper.isComplex(selector)) {
+		//if(helper.isComplex(selector)) {
 			var result = searchComplex(ele, selector, true);
 			return result;
-		} else if(helper.isID(selector)) {
-			var _ele = document.getElementById(selector.replace(/^#/, ''));
-			return _ele ? [_ele] : [];
-		} else if(helper.isClass(selector)) {
-			var _selector = selector.replace(/^\./, '');
-			var array = [];
-			if(ele.nodeType === 1) {
-				if(Utils.hasClass(ele, _selector)) {
-					array.push(ele);
-				}
-			}
-			var childNodes = filterChildEles(ele);
-			for(var i=0, len=childNodes.length; i<len; i++) {
-				var child = childNodes[i];
-				Array.prototype.push.apply(array, search(child, selector));
-			}
-			
-			return array;
-		} else if(helper.isTag(selector)) {
-			return ele.getElementsByTagName(selector) || [];
-		} else {
-			return [];
-		}
+		//}
 	}
 	/**
 	* 修正筛选条件中的某些额外字符
@@ -469,7 +437,53 @@ function VSearcher(selector, context) {
 		return selector.replace(/\s+(,|\>|\+)\s+/g, "$1");
 	}
 	
-	function originalSearch() {
+	function VSearcher(selector, context) {
+		var array = [];
+		if(typeof selector !== "string") {
+			return array;
+		}
+		
+		!context && (context = document);
+		if(context.nodeType != 1 || context.nodeType != 9) {
+			context = document;
+		}
+		selector = Utils.trim(selector);
+		// searchID
+		if(helper.isID(selector)) {
+			var _ele = context.getElementById(selector.replace(/^#/, ''));
+			_ele && array.push(_ele);
+			
+			return array;
+		} 
+		
+		// searchClass
+		if(helper.isClass(selector)) {	
+			// 快速检索
+			if(!document.getElementsByClassName) {
+				return document.getElementsByClassName(selector.replace(/^\./, '')) || [];
+			}
+		
+			var _selector = selector.replace(/^\./, '');
+			var array = [];
+			if(context.nodeType === 1) {
+				if(Utils.hasClass(context, _selector)) {
+					array.push(context);
+				}
+			}
+			var childNodes = filterChildEles(context);
+			for(var i=0, len=childNodes.length; i<len; i++) {
+				var child = childNodes[i];
+				Array.prototype.push.apply(array, search(child, selector));
+			}
+			
+			return array;
+		}
+		
+		// searchTag
+		if(helper.isTag(selector)) {
+			return context.getElementsByTagName(selector) || [];
+		} 
+		
 		var _selectorArray = fixedSelector(Utils.trim(selector)).split(/\s+/g);
 		var searchArray = [context];
 		for(var i=0, len=_selectorArray.length; i<len; i++) {
@@ -484,18 +498,7 @@ function VSearcher(selector, context) {
 		return searchArray;
 	}
 
-	// 为了方便测试，还是暂时先把这个开关给关掉吧~~~~
-	/*
-	if(context.querySelectorAll) {
-		try {
-			return context.querySelectorAll(selector);
-		} catch(e) {
-			console.error("querySelectorAll查询异常,自动更换为VSearcher引擎查询", e.message);
-			return originalSearch();
-		}
-	} else 
-	*/
-	{
-	   return originalSearch();
-	}
-}
+	window.VSearcher = VSearcher;
+})();
+
+
