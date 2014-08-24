@@ -459,7 +459,7 @@
 		// searchClass
 		if(helper.isClass(selector)) {	
 			// 快速检索
-			if(!document.getElementsByClassName) {
+			if(document.getElementsByClassName) {
 				return document.getElementsByClassName(selector.replace(/^\./, '')) || [];
 			}
 		
