@@ -332,6 +332,11 @@
 		
 		return result;
 	}
+	/**
+	* 通过选择器前缀查询元素下属元素
+	* @param ele 查询对象
+	* @param prefix 选择器前缀
+	*/
 	function findByPrefix(ele, prefix) {
 		switch(prefix.type) {
 			case "Tag":
@@ -346,7 +351,12 @@
 			break;
 		}
 	}
-	function findClass(className, ele) {
+	/**
+	* 根据类名查找元素下属元素
+	* @param ele 查询对象
+	* @param className 查询类名
+	*/
+	function findClass(ele, className) {
 		if(ele.getElementsByClassName) {
 			return ele.getElementsByClassName(className);
 		}
@@ -453,6 +463,10 @@
 		}
 		return array;
 	}
+	/**
+	* 查询选择器的头选择器类型
+	* @param selector 需要查询的选择器
+	*/
 	function getPrefixType(selector) {
 		if(helper.isTagPrefix(selector)) {
 			return {
